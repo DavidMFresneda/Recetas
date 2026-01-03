@@ -64,7 +64,7 @@ CREATE POLICY "Users can delete their own recipe images"
       EXISTS (
         SELECT 1 FROM recipes
         WHERE recipes.cover_image_path = storage.objects.name
-        AND recipes.author_id = auth.uid()
+        AND recipes.user_id = auth.uid()
       )
     )
   );
@@ -80,4 +80,6 @@ BEGIN
   RETURN current_setting('app.supabase_url') || '/storage/v1/object/public/' || bucket_name || '/' || file_path;
 END;
 $$ LANGUAGE plpgsql STABLE;
+
+
 
