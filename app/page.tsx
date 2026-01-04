@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Clock, Heart, ArrowRight, ChefHat } from "lucide-react";
 import { Header } from "../components/Header";
+import { ConnectionTest } from "../components/ConnectionTest";
 
 export default function Home() {
   const featuredRecipes = [
@@ -71,6 +72,13 @@ export default function Home() {
           <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-orange-100/50 blur-3xl" />
           <div className="absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-yellow-100/50 blur-3xl" />
         </section>
+
+        {/* Connection Test Section */}
+        {/* <section className="py-8 bg-zinc-50">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <ConnectionTest />
+          </div>
+        </section> */}
 
         {/* Latest Recipes Section */}
         <section className="py-16 sm:py-24">

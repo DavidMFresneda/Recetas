@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Search, ChefHat } from "lucide-react";
+import { UserMenu } from "./UserMenu";
 
 export function Header() {
   return (
@@ -21,17 +22,7 @@ export function Header() {
           </div>
         </div>
 
-        <nav className="flex items-center gap-4">
-          <Link href="/login" className="text-sm font-medium text-zinc-600 hover:text-zinc-900">
-            Log in
-          </Link>
-          <Link
-            href="/signup"
-            className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
-          >
-            Sign up
-          </Link>
-        </nav>
+        <UserMenu />
       </div>
     </header>
   );

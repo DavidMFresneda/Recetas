@@ -73,11 +73,7 @@ supabase db push
 2. You should see these tables:
    - `profiles`
    - `recipes`
-   - `recipe_ingredients`
-   - `recipe_steps`
-   - `recipe_tags`
-   - `favorites`
-   - `reports`
+
 
 ### Check RLS Policies
 
@@ -97,11 +93,7 @@ supabase db push
 
 - **profiles**: User profile information linked to `auth.users`
 - **recipes**: Main recipe table with metadata
-- **recipe_ingredients**: Ingredients list (ordered by position)
-- **recipe_steps**: Step-by-step instructions (ordered by position)
-- **recipe_tags**: Tags/categories for recipes
-- **favorites**: User favorite recipes
-- **reports**: Recipe reporting system
+
 
 ### Key Features
 
