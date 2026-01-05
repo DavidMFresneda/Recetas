@@ -52,7 +52,7 @@ export async function signUp(
 
   if (data.user) {
     revalidatePath('/', 'layout');
-    redirect('/');
+    redirect('/dashboard');
   }
 
   return {
@@ -87,7 +87,7 @@ export async function signIn(
   }
 
   revalidatePath('/', 'layout');
-  redirect('/');
+  redirect('/dashboard');
 }
 
 /**

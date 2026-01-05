@@ -1,43 +1,16 @@
 import Link from "next/link";
-import { Clock, Heart, ArrowRight, ChefHat } from "lucide-react";
+import { ArrowRight, ChefHat } from "lucide-react";
 import { Header } from "../components/Header";
-import { ConnectionTest } from "../components/ConnectionTest";
+import { getCurrentUser } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-export default function Home() {
-  const featuredRecipes = [
-    {
-      id: 1,
-      title: "Creamy Garlic Pasta",
-      author: "Maria Rossi",
-      time: "20 min",
-      image: "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?q=80&w=800&auto=format&fit=crop",
-      category: "Pasta"
-    },
-    {
-      id: 2,
-      title: "Fresh Berry Smoothie",
-      author: "Alex Chen",
-      time: "10 min",
-      image: "https://images.unsplash.com/photo-1553530666-ba11a7da3888?q=80&w=800&auto=format&fit=crop",
-      category: "Breakfast"
-    },
-    {
-      id: 3,
-      title: "Grilled Salmon",
-      author: "John Smith",
-      time: "35 min",
-      image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?q=80&w=800&auto=format&fit=crop",
-      category: "Main Dish"
-    },
-    {
-      id: 4,
-      title: "Avocado Toast",
-      author: "Sarah J.",
-      time: "15 min",
-      image: "https://images.unsplash.com/photo-1525351484163-7529414344d8?q=80&w=800&auto=format&fit=crop",
-      category: "Breakfast"
-    }
-  ];
+export default async function Home() {
+  const user = await getCurrentUser();
+
+  // If user is authenticated, redirect to dashboard
+  if (user) {
+    redirect('/dashboard');
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-white text-zinc-900">
@@ -48,21 +21,27 @@ export default function Home() {
         <section className="relative overflow-hidden bg-zinc-50 py-16 sm:py-24">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col items-center text-center">
+              <div className="flex justify-center mb-8">
+                <ChefHat className="h-16 w-16 text-orange-500" />
+              </div>
               <h1 className="max-w-3xl text-4xl font-extrabold tracking-tight text-zinc-900 sm:text-6xl">
                 Share your <span className="text-orange-500">culinary secrets</span> with the world
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600">
-                Join a community of food lovers. Discover thousands of recipes, share your own, and save your favorites for later.
+                Join a community of food lovers. Discover thousands of recipes, share your own, and connect with fellow cooking enthusiasts.
               </p>
               <div className="mt-10 flex items-center justify-center gap-x-6">
                 <Link
-                  href="/recipes"
+                  href="/signup"
                   className="rounded-full bg-orange-500 px-8 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-orange-600"
                 >
-                  Explore Recipes
+                  Get Started
                 </Link>
-                <Link href="/signup" className="group flex items-center gap-2 text-base font-semibold text-zinc-900">
-                  Join Community <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                <Link 
+                  href="/login" 
+                  className="group flex items-center gap-2 text-base font-semibold text-zinc-900"
+                >
+                  Sign In <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
               </div>
             </div>
@@ -73,61 +52,67 @@ export default function Home() {
           <div className="absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-yellow-100/50 blur-3xl" />
         </section>
 
-        {/* Connection Test Section */}
-        {/* <section className="py-8 bg-zinc-50">
+        {/* Features Section */}
+        <section className="py-16 sm:py-24 bg-white">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <ConnectionTest />
-          </div>
-        </section> */}
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold tracking-tight text-zinc-900">
+                Why RecipeShare?
+              </h2>
+              <p className="mt-4 text-lg text-zinc-600">
+                Everything you need to share and discover amazing recipes
+              </p>
+            </div>
 
-        {/* Latest Recipes Section */}
-        <section className="py-16 sm:py-24">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-end justify-between mb-12">
-              <div>
-                <h2 className="text-3xl font-bold tracking-tight text-zinc-900">Latest Discoveries</h2>
-                <p className="mt-2 text-zinc-600">Check out the newest recipes from our talented community.</p>
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+              <div className="text-center">
+                <div className="mx-auto h-12 w-12 rounded-full bg-orange-100 flex items-center justify-center mb-4">
+                  <ChefHat className="h-6 w-6 text-orange-500" />
+                </div>
+                <h3 className="text-xl font-semibold text-zinc-900 mb-2">Share Recipes</h3>
+                <p className="text-zinc-600">
+                  Upload and share your favorite recipes with the community. Include ingredients, instructions, and photos.
+                </p>
               </div>
-              <Link href="/recipes" className="hidden text-sm font-semibold text-orange-500 hover:text-orange-600 sm:block">
-                View all recipes →
-              </Link>
-            </div>
 
-            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-              {featuredRecipes.map((recipe) => (
-                <article key={recipe.id} className="group cursor-pointer">
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-zinc-100">
-                    <img
-                      src={recipe.image}
-                      alt={recipe.title}
-                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
-                    />
-                    <div className="absolute top-3 left-3">
-                      <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-zinc-900 backdrop-blur-sm">
-                        {recipe.category}
-                      </span>
-                    </div>
-                    <button className="absolute top-3 right-3 rounded-full bg-white/90 p-2 text-zinc-400 transition-colors hover:text-red-500">
-                      <Heart className="h-4 w-4" />
-                    </button>
-                  </div>
-                  <div className="mt-4">
-                    <div className="flex items-center gap-2 text-xs text-zinc-500 mb-1">
-                      <Clock className="h-3 w-3" />
-                      {recipe.time}
-                    </div>
-                    <h3 className="text-lg font-bold text-zinc-900">{recipe.title}</h3>
-                    <p className="text-sm text-zinc-500">by {recipe.author}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
+              <div className="text-center">
+                <div className="mx-auto h-12 w-12 rounded-full bg-orange-100 flex items-center justify-center mb-4">
+                  <ChefHat className="h-6 w-6 text-orange-500" />
+                </div>
+                <h3 className="text-xl font-semibold text-zinc-900 mb-2">Discover New Recipes</h3>
+                <p className="text-zinc-600">
+                  Browse through thousands of recipes shared by home cooks. Find inspiration for your next meal.
+                </p>
+              </div>
 
-            <div className="mt-12 text-center sm:hidden">
-              <Link href="/recipes" className="inline-block text-sm font-semibold text-orange-500 hover:text-orange-600">
-                View all recipes →
-              </Link>
+              <div className="text-center">
+                <div className="mx-auto h-12 w-12 rounded-full bg-orange-100 flex items-center justify-center mb-4">
+                  <ChefHat className="h-6 w-6 text-orange-500" />
+                </div>
+                <h3 className="text-xl font-semibold text-zinc-900 mb-2">Connect with Cooks</h3>
+                <p className="text-zinc-600">
+                  Join a vibrant community of food enthusiasts. Share tips, ask questions, and learn from others.
+                </p>
+              </div>
             </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="py-16 sm:py-24 bg-zinc-50">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className="text-3xl font-bold tracking-tight text-zinc-900 mb-4">
+              Ready to start sharing?
+            </h2>
+            <p className="text-lg text-zinc-600 mb-8">
+              Join RecipeShare today and become part of our growing community of food lovers.
+            </p>
+            <Link
+              href="/signup"
+              className="inline-flex items-center rounded-full bg-orange-500 px-8 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-orange-600"
+            >
+              Create Your Account
+            </Link>
           </div>
         </section>
       </main>
