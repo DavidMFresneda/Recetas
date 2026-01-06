@@ -163,3 +163,53 @@ export async function isUsernameAvailable(username: string): Promise<boolean> {
   return false;
 }
 
+/**
+ * Ensure a profile exists for a user, create it if missing
+ * This is a safety net in case the trigger fails
+ */
+export async function ensureProfileExists(userId: string, userEmail?: string, userMetadata?: Record<string, any>): Promise<Profile | null> {
+  const supabase = await createClient();
+  
+  // Check if profile exists
+  const existingProfile = await getProfileById(userId);
+  if (existingProfile) {
+    return existingProfile;
+  }
+
+  // Get user data from auth if not provided
+  let email = userEmail;
+  let metadata = userMetadata;
+  
+  if (!email || !metadata) {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    
+    if (userError || !user || user.id !== userId) {
+      console.error('Error getting user data for profile creation:', userError);
+      return null;
+    }
+    
+    email = user.email || '';
+    metadata = user.user_metadata || {};
+  }
+
+  if (!email) {
+    console.error('Cannot create profile without email');
+    return null;
+  }
+
+  // Create profile with available data
+  const profileData: ProfileInsert = {
+    id: userId,
+    full_name: 
+      metadata.full_name ||
+      metadata.display_name ||
+      email.split('@')[0] ||
+      'User',
+    username: metadata.username || null,
+    email: email,
+    bio: metadata.bio || null,
+  };
+
+  return createProfile(profileData);
+}
+

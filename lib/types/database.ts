@@ -75,3 +75,33 @@ export interface RecipeUpdate {
   cover_image_path?: string | null;
 }
 
+export interface Like {
+  user_id: string;
+  recipe_id: string;
+  created_at: string;
+}
+
+export interface Comment {
+  id: string;
+  user_id: string;
+  recipe_id: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Insert types for social features
+ */
+export interface CommentInsert {
+  user_id: string;
+  recipe_id: string;
+  content: string;
+}
+
+/**
+ * Update types for social features
+ */
+export interface CommentUpdate {
+  content: string;
+}

@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { ensureProfileExists } from '@/lib/db/profiles';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
@@ -51,6 +52,12 @@ export async function signUp(
   }
 
   if (data.user) {
+    // Ensure profile exists (fallback in case trigger fails)
+    await ensureProfileExists(
+      data.user.id,
+      data.user.email,
+      data.user.user_metadata
+    );
     revalidatePath('/', 'layout');
     redirect('/dashboard');
   }
@@ -77,13 +84,22 @@ export async function signIn(
 
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
 
   if (error) {
     redirect(`/login?error=${encodeURIComponent(error.message)}`);
+  }
+
+  // Ensure profile exists for existing users (in case they don't have one)
+  if (data.user) {
+    await ensureProfileExists(
+      data.user.id,
+      data.user.email,
+      data.user.user_metadata
+    );
   }
 
   revalidatePath('/', 'layout');

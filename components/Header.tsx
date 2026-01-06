@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Search, ChefHat } from "lucide-react";
+import { ChefHat } from "lucide-react";
 import { UserMenu } from "./UserMenu";
 
 export function Header() {
@@ -10,17 +10,6 @@ export function Header() {
           <ChefHat className="h-8 w-8 text-orange-500" />
           <span className="text-xl font-bold tracking-tight">RecipeShare</span>
         </Link>
-
-        <div className="hidden max-w-md flex-1 px-8 md:flex">
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-            <input
-              type="text"
-              placeholder="Search recipes, ingredients..."
-              className="h-10 w-full rounded-full border border-zinc-200 bg-zinc-50 pl-10 pr-4 text-sm outline-none transition-all focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
-            />
-          </div>
-        </div>
 
         <UserMenu />
       </div>

@@ -1,7 +1,6 @@
 -- Enable Row Level Security on all tables
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE recipes ENABLE ROW LEVEL SECURITY;
-ALTER TABLE favorites ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reports ENABLE ROW LEVEL SECURITY;
 
 -- ============================================
@@ -55,36 +54,17 @@ CREATE POLICY "Users can delete their own recipes"
   USING (auth.uid() = user_id);
 
 -- ============================================
--- FAVORITES POLICIES
--- ============================================
-
--- Users can only view their own favorites
-CREATE POLICY "Users can view their own favorites"
-  ON favorites FOR SELECT
-  USING (auth.uid() = user_id);
-
--- Users can add favorites
-CREATE POLICY "Users can add favorites"
-  ON favorites FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
-
--- Users can remove their own favorites
-CREATE POLICY "Users can remove their own favorites"
-  ON favorites FOR DELETE
-  USING (auth.uid() = user_id);
-
--- ============================================
 -- REPORTS POLICIES
 -- ============================================
 
 -- Only authenticated users can create reports
-CREATE POLICY "Authenticated users can create reports"
-  ON reports FOR INSERT
-  WITH CHECK (auth.uid() IS NOT NULL);
+-- CREATE POLICY "Authenticated users can create reports"
+--   ON reports FOR INSERT
+--   WITH CHECK (auth.uid() IS NOT NULL);
 
--- Reports are private (admin only access via service role key)
--- For MVP, we'll restrict SELECT to prevent users from seeing reports
--- Admin access should use service role key directly
-CREATE POLICY "Reports are not publicly viewable"
-  ON reports FOR SELECT
-  USING (false);
+-- -- Reports are private (admin only access via service role key)
+-- -- For MVP, we'll restrict SELECT to prevent users from seeing reports
+-- -- Admin access should use service role key directly
+-- CREATE POLICY "Reports are not publicly viewable"
+--   ON reports FOR SELECT
+--   USING (false);

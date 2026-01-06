@@ -55,19 +55,42 @@ Recipe information with ingredients and instructions stored as arrays.
 
 ---
 
-## Table: `favorites`
+## Table: `likes`
 
-User favorite recipes (junction table).
+User likes on recipes (junction table).
 
 | Column | Type | Constraints | Description |
 |--------|------|-------------|-------------|
-| `user_id` | UUID | NOT NULL, FK → `profiles(id)`, PRIMARY KEY | User who favorited |
-| `recipe_id` | UUID | NOT NULL, FK → `recipes(id)`, PRIMARY KEY | Favorited recipe |
-| `created_at` | TIMESTAMPTZ | NOT NULL, DEFAULT NOW() | When favorited |
+| `user_id` | UUID | NOT NULL, FK → `profiles(id)`, PRIMARY KEY | User who liked |
+| `recipe_id` | UUID | NOT NULL, FK → `recipes(id)`, PRIMARY KEY | Liked recipe |
+| `created_at` | TIMESTAMPTZ | NOT NULL, DEFAULT NOW() | When liked |
 
 ### Indexes
-- `idx_favorites_recipe_id` - On `recipe_id`
-- `idx_favorites_user_id` - On `user_id`
+- `idx_likes_recipe_id` - On `recipe_id`
+- `idx_likes_user_id` - On `user_id`
+
+---
+
+## Table: `comments`
+
+User comments on recipes.
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| `id` | UUID | PRIMARY KEY, DEFAULT uuid_generate_v4() | Comment ID |
+| `user_id` | UUID | NOT NULL, FK → `profiles(id)` | Comment author |
+| `recipe_id` | UUID | NOT NULL, FK → `recipes(id)` | Recipe being commented on |
+| `content` | TEXT | NOT NULL | Comment content |
+| `created_at` | TIMESTAMPTZ | NOT NULL, DEFAULT NOW() | Creation timestamp |
+| `updated_at` | TIMESTAMPTZ | NOT NULL, DEFAULT NOW() | Last update timestamp |
+
+### Indexes
+- `idx_comments_recipe_id` - On `recipe_id`
+- `idx_comments_user_id` - On `user_id`
+- `idx_comments_created_at` - On `created_at` (DESC)
+
+### Triggers
+- `update_comments_updated_at` - Automatically updates `updated_at` on row update
 
 ---
 
@@ -103,10 +126,16 @@ All tables have RLS enabled with the following policies:
 - **UPDATE**: Users can only update their own recipes (`user_id = auth.uid()`)
 - **DELETE**: Users can only delete their own recipes (`user_id = auth.uid()`)
 
-### `favorites`
-- **SELECT**: Users can only view their own favorites
-- **INSERT**: Users can only add favorites for themselves
-- **DELETE**: Users can only remove their own favorites
+### `likes`
+- **SELECT**: Public (anyone can view, needed to count likes)
+- **INSERT**: Authenticated users can add likes (only for themselves)
+- **DELETE**: Users can only remove their own likes
+
+### `comments`
+- **SELECT**: Public (all comments are viewable)
+- **INSERT**: Authenticated users can create comments
+- **UPDATE**: Users can only update their own comments
+- **DELETE**: Users can only delete their own comments
 
 ### `reports`
 - **SELECT**: Private (admin only via service role)
@@ -143,10 +172,29 @@ export interface Recipe {
   created_at: string;
 }
 
-export interface Favorite {
+export interface Like {
   user_id: string;
   recipe_id: string;
   created_at: string;
+}
+
+export interface Comment {
+  id: string;
+  user_id: string;
+  recipe_id: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CommentInsert {
+  user_id: string;
+  recipe_id: string;
+  content: string;
+}
+
+export interface CommentUpdate {
+  content: string;
 }
 
 export interface Report {
@@ -182,4 +230,6 @@ If you need to apply these changes to a new database:
 2. Run `002_rls_policies.sql` to enable RLS and create policies
 3. Run `004_auto_create_profile.sql` to set up the auto-profile creation trigger
 4. Run `003_storage_setup.sql` if you need storage bucket setup (optional)
+5. Run `006_social_features.sql` to create likes and comments tables
+6. Run `007_social_rls_policies.sql` to set up RLS policies for social features
 

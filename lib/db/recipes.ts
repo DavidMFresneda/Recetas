@@ -128,6 +128,7 @@ export async function getRecipesWithFilters(filters: {
   difficulty?: string;
   maxCookingTime?: number;
   search?: string;
+  ingredient?: string;
 }): Promise<Recipe[]> {
   const supabase = await createClient();
   
@@ -158,7 +159,22 @@ export async function getRecipesWithFilters(filters: {
     return [];
   }
 
-  return data || [];
+  let recipes = data || [];
+
+  // Filter by ingredient (client-side since ingredients is an array)
+  if (filters.ingredient && filters.ingredient.trim()) {
+    const ingredientLower = filters.ingredient.toLowerCase().trim();
+    recipes = recipes.filter(recipe => {
+      if (!recipe.ingredients || !Array.isArray(recipe.ingredients)) {
+        return false;
+      }
+      return recipe.ingredients.some((ing: string) => 
+        ing.toLowerCase().includes(ingredientLower)
+      );
+    });
+  }
+
+  return recipes;
 }
 
 /**
