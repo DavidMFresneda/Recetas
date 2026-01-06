@@ -4,17 +4,12 @@ import { updateCurrentUserProfile } from '@/lib/db/profiles';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-export interface ProfileUpdateResponse {
-  error?: string;
-  success?: boolean;
-}
-
 /**
  * Update the current user's profile
  */
 export async function updateProfile(
   formData: FormData
-): Promise<ProfileUpdateResponse> {
+): Promise<void> {
   const fullName = formData.get('full_name') as string;
   const username = formData.get('username') as string | null;
   const bio = formData.get('bio') as string | null;

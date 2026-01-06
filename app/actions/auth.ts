@@ -5,32 +5,23 @@ import { ensureProfileExists } from '@/lib/db/profiles';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-export interface AuthResponse {
-  error?: string;
-  success?: boolean;
-}
-
 /**
  * Sign up a new user
  */
 export async function signUp(
   formData: FormData
-): Promise<AuthResponse> {
+): Promise<void> {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
   const fullName = formData.get('full_name') as string;
   const username = formData.get('username') as string | null;
 
   if (!email || !password || !fullName) {
-    return {
-      error: 'Email, password, and full name are required',
-    };
+    redirect(`/signup?error=${encodeURIComponent('Email, password, and full name are required')}`);
   }
 
   if (password.length < 6) {
-    return {
-      error: 'Password must be at least 6 characters',
-    };
+    redirect(`/signup?error=${encodeURIComponent('Password must be at least 6 characters')}`);
   }
 
   const supabase = await createClient();
@@ -62,9 +53,8 @@ export async function signUp(
     redirect('/dashboard');
   }
 
-  return {
-    success: true,
-  };
+  // Fallback: if no user was created, redirect to signup with error
+  redirect(`/signup?error=${encodeURIComponent('Failed to create account')}`);
 }
 
 /**
@@ -72,14 +62,12 @@ export async function signUp(
  */
 export async function signIn(
   formData: FormData
-): Promise<AuthResponse> {
+): Promise<void> {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
   if (!email || !password) {
-    return {
-      error: 'Email and password are required',
-    };
+    redirect(`/login?error=${encodeURIComponent('Email and password are required')}`);
   }
 
   const supabase = await createClient();
